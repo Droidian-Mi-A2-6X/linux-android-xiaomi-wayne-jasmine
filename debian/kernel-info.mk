@@ -11,20 +11,27 @@ VARIANT = android
 KERNEL_BASE_VERSION = 4.4-0
 
 # The kernel cmdline to use
-KERNEL_BOOTIMAGE_CMDLINE = ttyMSM0,115200,n8 androidboot.console=ttyMSM0 earlycon=msm_serial_dm,0xc170000 androidboot.hardware=qcom user_debug=31 msm_rtb.filter=0x37 ehci-hcd.park=3 lpm_levels.sleep_disabled=1 sched_enable_hmp=1 sched_enable_power_aware=1 service_locator.enable=1 swiotlb=1 androidboot.configfs=true androidboot.usbcontroller=a800000.dwc3 loop.max_part=7 systempart=/dev/disk/by-partlabel/system_a console=tty0
+KERNEL_BOOTIMAGE_CMDLINE = ttyMSM0,115200,n8 androidboot.console=ttyMSM0 earlycon=msm_serial_dm,0xc170000 androidboot.hardware=qcom user_debug=31 msm_rtb.filter=0x37 ehci-hcd.park=3 lpm_levels.sleep_disabled=1 sched_enable_hmp=1 sched_enable_power_aware=1 service_locator.enable=1 swiotlb=1 androidboot.configfs=true androidboot.usbcontroller=a800000.dwc3 loop.max_part=7 console=tty0
 
 # Slug for the device vendor. This is going to be used in the KERNELRELASE
 # and package names.
 DEVICE_VENDOR = xiaomi
 
 # Slug for the device model. Like above.
-DEVICE_MODEL = jasmine-sprout
-
+ifeq ($(DEVICE), jasmine)
+        DEVICE_MODEL = jasmine
+else
+        DEVICE_MODEL = wayne
+endif
 # Marketing-friendly full-name. This will be used inside package descriptions
-DEVICE_FULL_NAME = Xiaomi Mi A2
+ifeq ($(DEVICE), jasmine)
+        DEVICE_FULL_NAME = Mi A2
+else
+        DEVICE_FULL_NAME = MI 6X
+endif
 
 # Defconfig to use
-KERNEL_DEFCONFIG = jasmine-perf_defconfig
+KERNEL_DEFCONFIG = waymine-perf_defconfig
 
 # Whether to include DTBs with the image. Use 0 (no) or 1.
 KERNEL_IMAGE_WITH_DTB = 1
@@ -32,7 +39,11 @@ KERNEL_IMAGE_WITH_DTB = 1
 # Path to the DTB
 # If you leave this undefined, an attempt to find it automatically
 # will be made.
-KERNEL_IMAGE_DTB = arch/arm64/boot/dts/qcom/sdm660-mtp.dtb
+ifeq ($(DEVICE), jasmine)
+        KERNEL_IMAGE_DTB = arch/arm64/boot/dts/qcom/sdm660-mtp.dtb
+else
+        KERNEL_IMAGE_DTB = arch/arm64/boot/dts/qcom/sdm660-mtp-A.dtb
+endif
 
 # Whether to include a DTB Overlay. Use 0 (no) or 1.
 KERNEL_IMAGE_WITH_DTB_OVERLAY = 0
@@ -77,7 +88,12 @@ FLASH_ENABLED = 1
 # on older devices.
 #
 # Do not enable if you don't know what you're doing
-FLASH_IS_LEGACY_DEVICE = 0
+ifeq ($(DEVICE), jasmine)
+        FLASH_IS_LEGACY_DEVICE = 0
+else
+        FLASH_IS_LEGACY_DEVICE = 1
+endif
+
 
 # Device manufacturer. This must match the `ro.product.vendor.manufacturer`
 # Android property. If you don't want to specify this, leave it undefined,
@@ -87,7 +103,11 @@ FLASH_INFO_MANUFACTURER = Xiaomi
 # Device model. This must match the `ro.product.vendor.model`
 # Android property. If you don't want to specify this, leave it undefined,
 # FLASH_INFO_CPU will be checked instead.
-FLASH_INFO_MODEL = Mi A2
+ifeq ($(DEVICE), jasmine)
+        FLASH_INFO_MODEL = Mi A2
+else
+        FLASH_INFO_MODEL = MI 6X
+endif
 
 # Device CPU. This will be grepped against /proc/cpuinfo to check if
 # we're running on the specific device. Note this is a last-resort
